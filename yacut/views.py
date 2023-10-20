@@ -1,31 +1,23 @@
-from flask import flash, redirect, render_template
+from flask import flash, render_template, request, redirect
 
-from . import app, db
+from . import app
 from .forms import URLForm
 from .models import URLMap
+from .constants import SHORT_URL_READY_MESSAGE
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
     form = URLForm()
-    url_map = URLMap()
     if form.validate_on_submit():
         original_link = form.original_link.data
         custom_id = form.custom_id.data
-        if not custom_id:
-            custom_id = url_map.get_unique_short_id()
-        existing_url = url_map.query.filter_by(original=original_link).first()
-        if existing_url:
-            flash('Предложенный вариант короткой ссылки уже существует.')
-            return render_template('index.html', form=form)
-        short_id = URLMap(
-            original=original_link,
-            short=custom_id
-        )
-        db.session.add(short_id)
-        db.session.commit()
-        flash('Ваша новая ссылка готова:')
-        flash(f'http://localhost/{short_id.short}')
+        new_url, error_message = URLMap.create_short_url(original_link, custom_id)
+        if error_message:
+            flash(error_message)
+        else:
+            flash(SHORT_URL_READY_MESSAGE)
+            flash(request.host_url + new_url.short)
     return render_template('index.html', form=form)
 
 

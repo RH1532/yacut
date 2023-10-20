@@ -1,7 +1,11 @@
+### Автор 
+- [Ильин Данила](https://github.com/RH1532)
+### Техно-стек 
+- Flask, Rest API
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```
-git clone 
+git clone https://github.com/RH1532/yacut.git
 ```
 
 ```
