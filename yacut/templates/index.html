@@ -47,11 +47,11 @@
             <h5 class="text-center">
               {% with messages = get_flashed_messages() %}
                   {{ messages[0] }}
-                  {% if result_url %}
-                    Ваша новая ссылка готова:
-                    <a href="{{ result_url }}">{{ result_url }}</a>
-                {% endif %}
               {% endwith %}
+              {% if result_url %}
+                  Ваша новая ссылка готова:
+                  <a href="{{ result_url }}">{{ result_url }}</a>
+              {% endif %}
             </h5>
             </p>
           </div>
