@@ -1,62 +1,64 @@
 import random
-import re
 from datetime import datetime
 
 from yacut import db
 from .constants import (ALLOWED_CHARACTERS,
-                        MAX_STRING_LENGTH,
-                        SHORT_URL_LENGTH,
+                        ALLOWED_CHARACTERS_REGEX,
+                        MAX_FIELD_LENGTH,
+                        SHORT_LENGTH,
                         DUPLICATE_SHORT_ID,
                         INVALID_SHORT_ID_NAME,
-                        MAX_CUSTOM_ID_LENGTH,)
+                        MAX_CUSTOM_ID_LENGTH,
+                        MAX_CUSTOM_ATTEMPTS,)
 
 
 class URLMap(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    original = db.Column(db.String(MAX_STRING_LENGTH), nullable=False)
-    short = db.Column(db.String(MAX_STRING_LENGTH), nullable=False)
+    original = db.Column(db.String(MAX_FIELD_LENGTH), nullable=False)
+    short = db.Column(db.String(MAX_CUSTOM_ID_LENGTH), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-    @classmethod
-    def find_by_short_id(cls, short_id):
-        return cls.query.filter_by(short=short_id).first()
-
-    def get_original_link(self):
-        return self.original
+    @staticmethod
+    def get_short_id(short_id):
+        return URLMap.query.filter_by(short=short_id).first()
 
     @staticmethod
-    def is_custom_id_unique(custom_id, original_link):
-        return URLMap.query.filter(
-            (URLMap.short == custom_id) | (URLMap.original == original_link)
-        ).first() is None
+    def is_custom_id_unique(custom_id):
+        return URLMap.query.filter(URLMap.short == custom_id).first() is None
 
-    @classmethod
-    def get_unique_short_id(cls, original_link):
-        for _ in range(MAX_CUSTOM_ID_LENGTH):
-            random_id = ''.join(random.choices(ALLOWED_CHARACTERS, k=SHORT_URL_LENGTH))
-            if cls.is_custom_id_unique(random_id, original_link):
+    @staticmethod
+    def get_unique_short_id():
+        for _ in range(MAX_CUSTOM_ATTEMPTS):
+            random_id = ''.join(random.choices(ALLOWED_CHARACTERS,
+                                               k=SHORT_LENGTH))
+            if URLMap.is_custom_id_unique(random_id):
                 return random_id
-        return None
+        return URLMap.get_unique_short_id()
 
-    @classmethod
-    def create_short_url(cls, original_link, custom_id=None):
+    @staticmethod
+    def create_short_url(original_link, custom_id=None):
         if not custom_id:
-            custom_id = cls.get_unique_short_id(original_link)
-        if custom_id:
-            if cls.is_invalid_short_id(custom_id):
-                return None, INVALID_SHORT_ID_NAME
-            if not cls.is_custom_id_unique(custom_id, original_link):
-                return None, DUPLICATE_SHORT_ID
-            new_url = cls(original=original_link, short=custom_id)
-            db.session.add(new_url)
-            db.session.commit()
-            return new_url, None
-        return None, DUPLICATE_SHORT_ID
+            custom_id = URLMap.get_unique_short_id()
+        if URLMap.is_invalid_short_id(custom_id):
+            raise Exception(INVALID_SHORT_ID_NAME)
+        if not URLMap.is_custom_id_unique(custom_id):
+            raise Exception(DUPLICATE_SHORT_ID)
+        new_url = URLMap(original=original_link, short=custom_id)
+        #if URLMap.length_validation(new_url, MAX_CUSTOM_ID_LENGTH):
+        #    raise Exception(TOO_CUSTOM_ID_LENGTH)
+        db.session.add(new_url)
+        db.session.commit()
+        return new_url
 
-    @classmethod
-    def is_invalid_short_id(cls, short_id):
-        if len(short_id) > SHORT_URL_LENGTH:
+    @staticmethod
+    def length_validation(url, length):
+        if len(url) > length:
             return True
-        if not re.match(f'^[{re.escape("".join(ALLOWED_CHARACTERS))}]*$', short_id):
-            return True
+
+    @staticmethod
+    def is_invalid_short_id(short_id):
+        if URLMap.length_validation(short_id, SHORT_LENGTH):
+            raise ValueError(INVALID_SHORT_ID_NAME)
+        if not ALLOWED_CHARACTERS_REGEX.match(short_id):
+            raise ValueError(INVALID_SHORT_ID_NAME)
         return False

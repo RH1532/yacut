@@ -18,20 +18,16 @@
                 <div>
                   {{ form.original_link(class="form-control form-control-lg py-2 mb-3", id="form-original_link", placeholder="Длинная ссылка") }}
                   <p>
-                    {% if form.original_link.errors %}
-                      {% for error in form.original_link.errors %}
-                        <span style="color:red">{{ error }}</span></p>
-                      {% endfor %}
-                    {% endif %}
+                    {% for error in form.original_link.errors %}
+                      <span style="color:red">{{ error }}</span></p>
+                    {% endfor %}
                 </div>
                 <div>
                   {{ form.custom_id(class="form-control form-control-lg py-2 mb-3", id="form-custom_id", placeholder="Ваш вариант короткой ссылки") }}
                   <p>
-                    {% if form.custom_id.errors %}
-                      {% for error in form.custom_id.errors %}
-                        <span style="color:red">{{ error }}</span></p>
-                      {% endfor %}
-                    {% endif %}
+                    {% for error in form.custom_id.errors %}
+                      <span style="color:red">{{ error }}</span></p>
+                    {% endfor %}
                 </div>
                 <input type="submit" class="btn btn-primary" value="Создать">
               </div>
@@ -50,11 +46,9 @@
             <p class="text-center">
             <h5 class="text-center">
               {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                  <p>{{ messages[0] }}</p>
-                  {% if messages[1] %}
-                    <a href="{{ messages[1] }}">{{ messages[1] }}</a>
-                  {% endif %}
+                  {{ messages[0] }}
+                  {% if result_url %}
+                    <a href="{{ result_url }}">{{ result_url }}</a>
                 {% endif %}
               {% endwith %}
             </h5>
@@ -67,10 +61,4 @@
 
     </section>
   </main>
-  
-
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-  integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 {% endblock content %}

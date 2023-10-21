@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from flask import jsonify, url_for, request
 
 from . import app
@@ -5,7 +7,7 @@ from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 from .constants import (MISSING_REQUEST_BODY,
                         MISSING_URL_FIELD,
-                        INVALID_SHORT_ID)
+                        INVALID_SHORT_ID,)
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -17,18 +19,19 @@ def add_short_url():
     if not original_link:
         raise InvalidAPIUsage(MISSING_URL_FIELD)
     custom_id = data.get('custom_id')
-    short_id, error_message = URLMap.create_short_url(original_link, custom_id)
-    if error_message:
-        raise InvalidAPIUsage(error_message)
-    return jsonify({'url': short_id.original,
+    try:
+        url_map = URLMap.create_short_url(original_link, custom_id)
+    except Exception as e:
+        raise InvalidAPIUsage(str(e))
+    return jsonify({'url': url_map.original,
                     'short_link': url_for('redirect_to_original',
-                                          short_id=short_id.short,
+                                          short_id=url_map.short,
                                           _external=True)}), 201
 
 
 @app.route('/api/id/<short_id>/', methods=['GET'])
 def get_short_url(short_id):
-    url_map = URLMap.find_by_short_id(short_id)
+    url_map = URLMap.get_short_id(short_id)
     if not url_map:
-        raise InvalidAPIUsage(INVALID_SHORT_ID, 404)
-    return jsonify({'url': url_map.original}), 200
+        raise InvalidAPIUsage(INVALID_SHORT_ID, HTTPStatus.NOT_FOUND)
+    return jsonify({'url': url_map.original}), HTTPStatus.OK
