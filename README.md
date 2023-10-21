@@ -44,4 +44,4 @@ pip install -r requirements.txt
 - `flask run`: Запустить приложение.
 - `flask --help`: Получить доступ к справке Flask.
 ### Справка API
-Документация API доступна в файле [openapi.yml](openapi.yml).
+Документация API доступна в файле openapi.yml.
