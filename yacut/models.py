@@ -3,11 +3,9 @@ from datetime import datetime
 
 from yacut import db
 from .constants import (ALLOWED_CHARACTERS,
-                        ALLOWED_CHARACTERS_REGEX,
                         MAX_FIELD_LENGTH,
                         SHORT_LENGTH,
                         DUPLICATE_SHORT,
-                        INVALID_SHORT_NAME,
                         MAX_CUSTOM_LENGTH,
                         MAX_CUSTOM_ATTEMPTS,
                         SHORT_CREATION_ERROR)
@@ -44,10 +42,6 @@ class URLMap(db.Model):
                 custom_id = URLMap.get_unique_short_id()
             except Exception as e:
                 raise InvalidShortNameError(str(e))
-        if len(custom_id) > SHORT_LENGTH:
-            raise InvalidShortNameError(INVALID_SHORT_NAME)
-        if not ALLOWED_CHARACTERS_REGEX.match(custom_id):
-            raise InvalidShortNameError(INVALID_SHORT_NAME)
         if not URLMap.is_custom_id_unique(custom_id):
             raise DuplicateShortError(DUPLICATE_SHORT)
         new_url = URLMap(original=original_link, short=custom_id)

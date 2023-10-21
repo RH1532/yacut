@@ -8,7 +8,10 @@ from .models import URLMap
 from .constants import (MISSING_REQUEST_BODY,
                         MISSING_URL_FIELD,
                         INVALID_SHORT,
-                        SHORT_REDIRECT_FUNCTION)
+                        SHORT_REDIRECT_FUNCTION,
+                        MAX_CUSTOM_LENGTH,
+                        ALLOWED_CHARACTERS_REGEX,
+                        INVALID_SHORT_NAME)
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -20,6 +23,8 @@ def add_short_url():
     if not original_link:
         raise InvalidAPIUsage(MISSING_URL_FIELD)
     custom_id = data.get('custom_id')
+    if custom_id and (len(custom_id) > MAX_CUSTOM_LENGTH or not ALLOWED_CHARACTERS_REGEX.match(custom_id)):
+        raise InvalidAPIUsage(INVALID_SHORT_NAME)
     try:
         url_map = URLMap.create(original_link, custom_id)
     except Exception as e:
