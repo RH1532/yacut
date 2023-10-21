@@ -40,3 +40,8 @@ python3 -m pip install --upgrade pip
 ```
 pip install -r requirements.txt
 ```
+### Команды
+- `flask run`: Запустить приложение.
+- `flask --help`: Получить доступ к справке Flask.
+### Справка API
+Документация API доступна в файле [openapi.yml](openapi.yml).

@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, Length, Optional, Regexp
 from .constants import (ALLOWED_CHARACTERS_REGEX,
                         REQUIRED_FIELD_MESSAGE,
                         MAX_FIELD_LENGTH,
-                        MAX_CUSTOM_ID_LENGTH)
+                        MAX_CUSTOM_LENGTH)
 
 
 class URLForm(FlaskForm):
@@ -17,7 +17,7 @@ class URLForm(FlaskForm):
     custom_id = URLField(
         'Пользовательский идентификатор',
         validators=[Optional(),
-                    Length(max=MAX_CUSTOM_ID_LENGTH),
+                    Length(max=MAX_CUSTOM_LENGTH),
                     Regexp(ALLOWED_CHARACTERS_REGEX)]
     )
     submit = SubmitField('Создать')
