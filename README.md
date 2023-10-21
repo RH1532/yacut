@@ -40,7 +40,8 @@ python3 -m pip install --upgrade pip
 ```
 pip install -r requirements.txt
 ```
-### Команды
+```
+###Команды
 - `flask db init`: Создание миграций.
 - `flask db migrate -m "Initial migration."`: Создание первоначальной миграции.
 - `flask db upgrade`: Применение миграции к базе данных.
