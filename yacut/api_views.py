@@ -7,11 +7,8 @@ from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 from .constants import (MISSING_REQUEST_BODY,
                         MISSING_URL_FIELD,
-                        INVALID_SHORT,
-                        MAX_SHORT_LENGTH,
-                        ALLOWED_CHARACTERS_REGEX,
-                        INVALID_SHORT_NAME)
-from .exceptions import DuplicateShortError
+                        INVALID_SHORT)
+from .exceptions import DuplicateShortError, InvalidShortNameError
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -23,11 +20,9 @@ def add_short_url():
     if not original_link:
         raise InvalidAPIUsage(MISSING_URL_FIELD)
     short = data.get('custom_id')
-    if short and (len(short) > MAX_SHORT_LENGTH or not ALLOWED_CHARACTERS_REGEX.match(short)):
-        raise InvalidAPIUsage(INVALID_SHORT_NAME)
     try:
-        url_map = URLMap.create(original_link, short)
-    except DuplicateShortError as e:
+        url_map = URLMap.create(original_link, short, source='api')
+    except (InvalidShortNameError, DuplicateShortError) as e:
         raise InvalidAPIUsage(str(e))
     return jsonify({
         'url': url_map.original,

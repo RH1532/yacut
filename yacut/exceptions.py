@@ -4,3 +4,7 @@ class InvalidShortNameError(Exception):
 
 class DuplicateShortError(Exception):
     pass
+
+
+class OriginalLinkError(Exception):
+    pass

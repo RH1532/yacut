@@ -10,8 +10,12 @@ from .constants import (ALLOWED_CHARACTERS,
                         MAX_SHORT_LENGTH,
                         MAX_SHORT_ATTEMPTS,
                         SHORT_CREATION_ERROR,
-                        SHORT_REDIRECT_FUNCTION)
-from .exceptions import DuplicateShortError
+                        SHORT_REDIRECT_FUNCTION,
+                        MAX_SHORT_LENGTH,
+                        ALLOWED_CHARACTERS_REGEX,
+                        INVALID_SHORT_NAME,
+                        MAX_FIELD_LENGTH)
+from .exceptions import DuplicateShortError, InvalidShortNameError, OriginalLinkError
 
 
 class URLMap(db.Model):
@@ -34,7 +38,13 @@ class URLMap(db.Model):
         raise DuplicateShortError(SHORT_CREATION_ERROR)
 
     @staticmethod
-    def create(original_link, short=None):
+    def create(original_link, short=None, source=None):
+        if source:
+            if len(original_link) > MAX_FIELD_LENGTH:
+                raise OriginalLinkError(INVALID_SHORT_NAME)
+            if short and (len(short) > MAX_SHORT_LENGTH
+                          or not ALLOWED_CHARACTERS_REGEX.match(short)):
+                raise InvalidShortNameError(INVALID_SHORT_NAME)
         if not short:
             short = URLMap.get_unique_short()
         elif URLMap.get(short):
