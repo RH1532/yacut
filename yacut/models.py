@@ -38,8 +38,8 @@ class URLMap(db.Model):
         raise DuplicateShortError(SHORT_CREATION_ERROR)
 
     @staticmethod
-    def create(original_link, short=None, source=None):
-        if source:
+    def create(original_link, short=None, enable_validation=None):
+        if enable_validation:
             if len(original_link) > MAX_FIELD_LENGTH:
                 raise OriginalLinkError(INVALID_SHORT_NAME)
             if short and (len(short) > MAX_SHORT_LENGTH

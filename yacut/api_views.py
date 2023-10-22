@@ -21,7 +21,7 @@ def add_short_url():
         raise InvalidAPIUsage(MISSING_URL_FIELD)
     short = data.get('custom_id')
     try:
-        url_map = URLMap.create(original_link, short, source='api')
+        url_map = URLMap.create(original_link, short, enable_validation='yes')
     except (InvalidShortNameError, DuplicateShortError) as e:
         raise InvalidAPIUsage(str(e))
     return jsonify({
