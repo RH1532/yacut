@@ -12,9 +12,9 @@ MAX_SHORT_LENGTH = 16
 SHORT_LENGTH = 6
 MAX_SHORT_ATTEMPTS = 10
 
-ORIGINAL = 'Оригинальная ссылка'
-SHORT = 'Пользовательский идентификатор'
-CREATE = 'Создать'
+ORIGINAL_FORM = 'Оригинальная ссылка'
+SHORT_FORM = 'Пользовательский идентификатор'
+CREATE_FORM = 'Создать'
 SHORT_REDIRECT_FUNCTION = 'redirect_to_original'
 REQUIRED_FIELD_MESSAGE = 'Обязательное поле'
 MISSING_REQUEST_BODY = 'Отсутствует тело запроса'

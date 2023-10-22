@@ -6,21 +6,21 @@ from .constants import (ALLOWED_CHARACTERS_REGEX,
                         REQUIRED_FIELD_MESSAGE,
                         MAX_FIELD_LENGTH,
                         MAX_SHORT_LENGTH,
-                        ORIGINAL,
-                        SHORT,
-                        CREATE)
+                        ORIGINAL_FORM,
+                        SHORT_FORM,
+                        CREATE_FORM)
 
 
 class URLForm(FlaskForm):
     original_link = URLField(
-        ORIGINAL,
+        ORIGINAL_FORM,
         validators=[DataRequired(message=REQUIRED_FIELD_MESSAGE),
                     Length(max=MAX_FIELD_LENGTH)]
     )
     custom_id = URLField(
-        SHORT,
+        SHORT_FORM,
         validators=[Optional(),
                     Length(max=MAX_SHORT_LENGTH),
                     Regexp(ALLOWED_CHARACTERS_REGEX)]
     )
-    submit = SubmitField(CREATE)
+    submit = SubmitField(CREATE_FORM)

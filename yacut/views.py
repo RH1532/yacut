@@ -5,7 +5,7 @@ from flask import abort, flash, render_template, redirect
 from . import app
 from .forms import URLForm
 from .models import URLMap
-from .exceptions import InvalidShortNameError, DuplicateShortError
+from .exceptions import DuplicateShortError
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -16,16 +16,13 @@ def index_view():
     original_link = form.original_link.data
     custom_id = form.custom_id.data
     try:
-        url_map, short_url = URLMap.create(original_link, custom_id)
-    except InvalidShortNameError as e:
-        flash(str(e))
-        return render_template('index.html', form=form)
+        url_map = URLMap.create(original_link, custom_id)
     except DuplicateShortError as e:
         flash(str(e))
         return render_template('index.html', form=form)
     return render_template('index.html',
                            form=form,
-                           result_url=short_url)
+                           result_url=URLMap.short_url(url_map))
 
 
 @app.route('/<string:short_id>')
